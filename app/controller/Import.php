@@ -10,22 +10,25 @@ class Import extends Controller {
 	public function __construct() {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$this->view('DefaultLayout');
-		$this->models('Scrape,RSS_Adapter,Json_Adapter,BNNTickerAdapter,FileReader');
+		$this->models('Scrape,RSS_Adapter,Json_Adapter,BNNTickerAdapter,BNNArticleAdapter,FileReader');
 	}
 
-	public function article($portal, $id) {
+	public function article() {
 
-		if (strlen($id) == 4) {$this->ticker($id); return;}
-
-		$content = $this->Json_Adapter->get_by_id($id);
+		$content = $this->BNNArticleAdapter->get($_POST['url']);
 
 		if (is_null($content)) {
 			$this->view->json(['content' => 'keine Artikeldaten gefunden']);
 			die;
 		}
 
-		$data['content'] = $content;
+		// Removes HTML Tags and multiple lines and spaces
+		$content = strip_tags($content);
+    	$content = preg_replace('/\n\s*\n+/', "\n", $content);
+	    $content = preg_replace('/ {2,}/', ' ', $content);
+	    $content = trim($content);
 
+		$data['content'] = $content;
 		$this->view->json($data);
 	}
 

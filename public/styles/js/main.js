@@ -338,15 +338,10 @@ methods: {
 		let value = event.target.value || null;
 		if (!value) {this.input = ''; this.loading = false; return}
 
-		let id = value.match(/-(\d{8}).html/);
-		if (id) {id = id[1]}
-		else {id = value}
+		let formData = new FormData()
+		formData.append('url', value)
 
-		let portal = 'LR'
-		if (value.includes('moz.de')) {portal = 'MOZ'}
-		if (value.includes('swp.de')) {portal = 'SWP'}
-
-		let response = await fetch('/import/article/' + portal + '/' + id)
+		let response = await fetch('/import/article', {method: "POST", body: formData})
 		if (!response.ok) {this.input = 'URL ungültig oder Artikel nicht gefunden'; this.loading = false; return}
 
 		let json = await response.json()
