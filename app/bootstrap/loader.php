@@ -1,6 +1,6 @@
 <?php
 
-define('APP_START', microtime(true));
+define('APP_START', microtime(TRUE));
 error_reporting(E_ALL);
 
 // Pathing
@@ -12,25 +12,31 @@ define('TEMPLATES', APP . 'templates' . DIRECTORY_SEPARATOR);
 define('TEMPLATE_EXTENSION', '.tpl');
 define('LOGS', ROOT . 'logs' . DIRECTORY_SEPARATOR);
 define('PUBLICFOLDER', ROOT . 'public' . DIRECTORY_SEPARATOR);
-define('PAGEURL', (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]");
+define('PAGEURL', (isset($_SERVER['HTTPS']) ? 'https' : 'http') . "://$_SERVER[HTTP_HOST]");
 
 // Internal Flundr Config
 define('CONTROLLER_NAMESPACE', '\app\controller\\');
 define('MODEL_NAMESPACE', '\app\models\\');
 define('VIEW_NAMESPACE', '\app\views\\');
 
-define('ENV_PATH', ROOT . '.env');
+define('ENV_PATH', ROOT . 'buddy-config.php');
 
 $subdomain = explode('.', $_SERVER['HTTP_HOST'])[0] ?? '';
 switch ($subdomain) {
-	case 'chat-test': define('PORTAL', 'TEST'); break;	
-	default: define('PORTAL', 'default'); break;
+  case 'chat-test': define('PORTAL', 'TEST');
+    break;
+  default: define('PORTAL', 'default');
+    break;
 }
 
 // Load Environment Config
 include_once ENV_PATH;
-if (!defined('ENV_PRODUCTION')) {define('ENV_PRODUCTION', false);}
-if (ENV_PRODUCTION) {error_reporting(0);}
+if (!defined('ENV_PRODUCTION')) {
+  define('ENV_PRODUCTION', FALSE);
+}
+if (ENV_PRODUCTION) {
+  error_reporting(0);
+}
 
 // Load App Config
 include_once CONFIGPATH . 'config.php';
