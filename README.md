@@ -23,7 +23,7 @@ More information on: https://www.artmessengers.de/buddy/buddy-features.pdf
 ## Requirements
 External OpenAI account (https://platform.openai.com)
 Webserver with PHP8 and MySQL Database
-preferablly Composer
+preferably Composer
 
 ## Installation
 1. Important: Before you start you have to rename 5 Files:
