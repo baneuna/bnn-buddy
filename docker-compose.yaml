@@ -1,0 +1,58 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - ${PHP_PORT}:8000
+      - ${PHPMYADMIN_PORT}:8001
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./public:/var/www/html:ro
+      - phpmyadmin:/var/www/phpmyadmin:ro
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM php:fpm-bullseye
+        RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+        RUN docker-php-ext-install pdo_mysql
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+    volumes:
+      - ./:/var/www/html:ro
+      - ./logs:/var/www/html/logs
+      - ./cache:/var/www/html/cache/
+
+  mariadb:
+    image: ghcr.io/linuxserver/mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - database:/config/databases
+
+  phpmyadmin:
+    image: phpmyadmin:fpm
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+    volumes:
+      - phpmyadmin:/var/www/html
+    environment:
+      PMA_HOST: mariadb
+
+volumes:
+    phpmyadmin:
+    database:
+    cache:
